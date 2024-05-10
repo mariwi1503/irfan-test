@@ -65,6 +65,8 @@ module.exports = {
           expiresIn: 3600,
         }
       );
+      const tokenExp = new Date();
+      tokenExp.setHours(tokenExp.getHours() + 1);
 
       // save user logout time
       await prisma.user.update({
@@ -72,9 +74,13 @@ module.exports = {
         data: {
           logOut: null,
           loginTimes: user.loginTimes + 1,
+          token,
+          tokenExp,
         },
       });
 
+      // create login log
+      await prisma.userLogs.create({ data: { userId: user.id } });
       res.status(200).json({
         status: "success",
         data: { token },
@@ -94,7 +100,7 @@ module.exports = {
       // set logout time
       await prisma.user.update({
         where: { id },
-        data: { logOut: new Date() },
+        data: { logOut: new Date(), token: null, tokenExp: null },
       });
       res.status(200).json({
         status: "success",

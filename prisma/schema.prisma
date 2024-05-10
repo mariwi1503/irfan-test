@@ -14,23 +14,26 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  id            String     @id @default(cuid())
+  email         String     @unique
+  emailVerified Boolean    @default(false)
   name          String
   password      String
-  role          String    @default("user")
-  createdAt     DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime  @updatedAt @db.Timestamptz(6)
-  loginTimes    Int       @default(0)
+  token         String?
+  tokenExp      DateTime?  @db.Timestamptz(6)
+  role          String     @default("user")
+  createdAt     DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime   @updatedAt @db.Timestamptz(6)
+  loginTimes    Int        @default(0)
   logOut        DateTime?
   otp           String?
+  UserLogs      UserLogs[]
 }
 
-// model UserLogs {
-//   id        String   @id @default(cuid())
-//   User      User     @relation(fields: [userId], references: [id])
-//   userId    String
-//   createdAt DateTime @default(now()) @db.Timestamptz(6)
-//   updatedAt DateTime @updatedAt @db.Timestamptz(6)
-// }
+model UserLogs {
+  id        String   @id @default(cuid())
+  User      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
