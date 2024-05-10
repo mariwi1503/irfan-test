@@ -2,6 +2,27 @@ require("dotenv").config();
 const prisma = require("../db");
 
 module.exports = {
+  getProfile: async (req, res) => {
+    try {
+      const id = req.userId;
+      let user = await prisma.user.findUnique({ where: { id } });
+      if (!user) throw new Error("User not found");
+
+      delete user.logOut;
+      delete user.password;
+      delete user.otp;
+      delete user.token;
+      delete user.tokenExp;
+      delete user.loginTimes;
+
+      res.status(200).json({
+        status: "success",
+        data: user,
+      });
+    } catch (error) {
+      res.status(400).json({ status: "failed", message: error.message });
+    }
+  },
   userList: async (req, res) => {
     try {
       const userList = await prisma.user.findMany();
@@ -52,7 +73,6 @@ module.exports = {
       res.status(400).json({ status: "failed", message: error.message });
     }
   },
-
   averageActiveUser: async (req, res) => {
     try {
       const currentDate = new Date();

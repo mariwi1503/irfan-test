@@ -14,7 +14,10 @@ module.exports = {
       if (!verify) throw new Error("Unauthorized");
 
       const user = await prisma.user.findUnique({ where: { id: verify.id } });
-      if (!user) throw new Error("User tidak dikenal");
+      if (!user) throw new Error("User not found");
+
+      if (!user.token || user.token != token)
+        throw new Error("Session invalid");
 
       req.user = user;
       req.userId = user.id;
@@ -31,10 +34,12 @@ module.exports = {
 
       const verify = jwt.verify(token, jwtSecret);
       if (!verify) throw new Error("Unauthorized");
-      if (!verify.verified)
-        throw new Error("Anda harus memverifikasi email terlebih dahulu");
+      if (!verify.verified) throw new Error("Verified user only");
 
       const user = await prisma.user.findUnique({ where: { id: verify.id } });
+      if (!user) throw new Error("User not found");
+      if (!user.token || user.token != token)
+        throw new Error("Session invalid");
 
       req.user = user;
       req.userId = user.id;
