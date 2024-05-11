@@ -138,7 +138,7 @@ module.exports = {
   },
   forgotPassword: async (req, res) => {
     try {
-      const payload = await validation.loginSchema.validateAsync(req.body);
+      const payload = await validation.getNewPassword.validateAsync(req.body);
       const email = payload.email.toLowerCase();
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
@@ -174,6 +174,7 @@ module.exports = {
   },
   resetPassword: async (req, res) => {
     try {
+      const payload = await validation.resetPassword.validateAsync(req.body);
       const password = payload.password;
       const user = await prisma.user.findUnique({ where: { id: req.userId } });
       if (!user) throw new Error("User not found");
