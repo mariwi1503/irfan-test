@@ -7,7 +7,11 @@ router.post("/auth/verify", authController.verifyEmail);
 router.post("/auth/login", authController.login);
 router.post("/auth/resend-otp", authController.resendOtp);
 router.get("/auth/new-password", authController.forgotPassword);
-router.post("/auth/reset-password", middleware.user, authController.login);
+router.post(
+  "/auth/reset-password",
+  middleware.user,
+  authController.resetPassword
+);
 router.put("/auth/logout", middleware.user, authController.logout);
 
 module.exports = router;
